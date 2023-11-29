@@ -66,7 +66,7 @@ public class moveTo : MonoBehaviour
             timer = 0.0f;
         }
 
-        if(hunger < 499.0f)
+        if(hunger < 100.0f)
         {
             _agent.SetDestination(target1.transform.position);
             _agent.isStopped = false;
