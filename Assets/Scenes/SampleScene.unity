@@ -872,6 +872,27 @@ MonoBehaviour:
   hunger: 500
   thirst: 105
   wc: 500
+--- !u!95 &319559620
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319559615}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 267d02df2cd8b0e4db46664936bdda3b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &583905951
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,6 +1516,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a093814694bcb014f8b06fb67b6b98b5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 319559616}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a093814694bcb014f8b06fb67b6b98b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 319559620}
   m_SourcePrefab: {fileID: 100100000, guid: a093814694bcb014f8b06fb67b6b98b5, type: 3}
 --- !u!1 &1461633951
 GameObject:
