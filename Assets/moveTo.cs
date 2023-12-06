@@ -12,6 +12,7 @@ public class moveTo : MonoBehaviour
     public GameObject target1;
     public GameObject target2;
     public GameObject target3;
+    public GameObject center;
     //public List<GameObject> targets;
     public float stopDistance = 1f;
     public int counter = 0;
@@ -23,6 +24,8 @@ public class moveTo : MonoBehaviour
     private float timer = 0.0f;
 
     public float maxHunger = 500.0f;
+    public float maxThirst = 500.0f;
+    public float maxWC = 500.0f;
 
     public float hunger = 500.0f;
     public float thirst = 500.0f;
@@ -32,29 +35,12 @@ public class moveTo : MonoBehaviour
     void Start()
     {
         _agent = GetComponent<NavMeshAgent>();
-        _animator = GetComponent<Animator>();
+        //_animator = GetComponent<Animator>();
         //target = targets[0];
     }
 
     void Update()
     {
-        /*if(Vector3.Distance(target.transform.position, _agent.transform.position) > stopDistance) 
-        {
-            _agent.SetDestination(target.transform.position);
-            _agent.isStopped = false;
-            _animator.SetBool("isWalking", true);
-        }
-        else
-        {
-            _agent.isStopped = true;
-            _animator.SetBool("isWalking", false);
-            counter++;
-            if(counter >= targets.Count) 
-            { 
-                counter = 0;
-            }
-            target = targets[counter];
-        }*/
 
         timer += Time.deltaTime;
 
@@ -66,25 +52,53 @@ public class moveTo : MonoBehaviour
             timer = 0.0f;
         }
 
-        if(hunger < 100.0f)
+        if (hunger < 100.0f)
         {
-            _agent.SetDestination(target1.transform.position);
-            _agent.isStopped = false;
-            _animator.SetBool("isWalking", true);
+            MoveToTarget(target1, ref hunger, maxHunger);
+        }
+        else if (thirst < 100.0f)
+        {
+            MoveToTarget(target2, ref thirst, maxThirst);
+        }
+        else if (wc < 100.0f)
+        {
+            MoveToTarget(target3, ref wc, maxWC);
+        }
+        else
+        {
+            _agent.SetDestination(center.transform.position);
         }
 
-        if (Vector3.Distance(target1.transform.position, _agent.transform.position) < stopDistance)
-        {
-            _agent.isStopped = true;
-            _animator.SetBool("isWalking", false);
-            hunger = maxHunger;
+        CheckNeeds();
 
+        void MoveToTarget(GameObject destination, ref float need, float maxNeed)
+        {
+            if (Vector3.Distance(destination.transform.position, _agent.transform.position) > stopDistance)
+            {
+                _agent.SetDestination(destination.transform.position);
+                _agent.isStopped = false;
+                //_animator.SetBool("isWalking", true);
+            }
+            else
+            {
+                _agent.isStopped = true;
+                need = maxNeed;
+                //_animator.SetBool("isWalking", false);
+                if (destination != center)
+                {
+                    _agent.isStopped = false;
+                    _agent.SetDestination(center.transform.position);
+                }
+            }
         }
 
 
-            if (hunger == 0.0f || thirst == 0.0f || wc == 0.0f)
+        void CheckNeeds()
         {
-            SceneManager.LoadScene("SampleScene");
+            if (hunger <= 0.0f || thirst <= 0.0f || wc <= 0.0f)
+            {
+                SceneManager.LoadScene("SampleScene");
+            }
         }
 
     }
