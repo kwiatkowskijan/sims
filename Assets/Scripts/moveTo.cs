@@ -70,21 +70,6 @@ public class moveTo : MonoBehaviour
 
     }
 
-    public void IncrementNeeds(ref float need, ref float maxNeed)
-    {
-        if (need < maxNeed)
-        {
-            timer += Time.deltaTime;
-
-            while (timer >= changeTime)
-            {
-                need += addValue;
-                timer -= changeTime;
-                Debug.Log("Need increased: " + need);
-            }
-        }
-    }
-
     public void MoveToTarget(GameObject destination, ref float need, float maxNeed)
     {
         float distanceToTarget = Vector3.Distance(destination.transform.position, _agent.transform.position);
@@ -94,11 +79,16 @@ public class moveTo : MonoBehaviour
             Debug.Log("Moving to target: " + destination.name);
             _agent.SetDestination(destination.transform.position);
             _agent.isStopped = false;
-            //_animator.SetBool("isWalking", true);
         }
-        else
+        else if (distanceToTarget <= stopDistance)
         {
             Debug.Log("Arrived at target: " + destination.name);
+
+            while(need < maxNeed)
+            {
+                IncrementNeeds(ref need, ref maxNeed);
+            }
+
             _agent.isStopped = true;
 
             if (destination != center && need >= maxNeed)
@@ -109,10 +99,20 @@ public class moveTo : MonoBehaviour
                 Debug.Log("Returning to center");
             }
         }
-
     }
 
+    public void IncrementNeeds(ref float need, ref float maxNeed)
+    {
+            timer += Time.deltaTime;
 
+            if (timer >= changeTime)
+            {
+                need += addValue;
+                timer -= changeTime;
+                Debug.Log("Need increased: " + need);
+            }
+        
+    }
 
     public void CheckNeeds()
     {

@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HungerStripe : MonoBehaviour
 {
-    public TextMeshProUGUI textHunger;
-    public TextMeshProUGUI textThirst;
-    public TextMeshProUGUI textWc;
+
+    public Slider HungerBar;
+    public Slider ThirstBar;
+    public Slider WcBar;
 
     private void Update()
     {
@@ -21,9 +23,9 @@ public class HungerStripe : MonoBehaviour
                 float thirst = moveToComponent.thirst;
                 float wc = moveToComponent.wc;
 
-                textHunger.text = "G³ód: " + Mathf.RoundToInt((hunger / 500f) * 100f) + " %";
-                textThirst.text = "Pragnienie: " + Mathf.RoundToInt((thirst / 500f) * 100f) + " %";
-                textWc.text = "WC: " + Mathf.RoundToInt((wc / 500f) * 100f) + " %";
+                HungerBar.value = hunger / 500.0f;
+                ThirstBar.value = thirst / 500.0f;
+                WcBar.value = wc / 500.0f;
             }
         }
     }
