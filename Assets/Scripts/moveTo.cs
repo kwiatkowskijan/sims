@@ -3,122 +3,152 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
-using static UnityEngine.GraphicsBuffer;
 
 public class moveTo : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private Animator _animator;
-    public GameObject target1;
-    public GameObject target2;
-    public GameObject target3;
-    public GameObject center;
-    public float stopDistance = 1f;
-    public int counter = 0;
-    public float changeTime = 1.0f;
-    public float hungerChangeValue = 1.0f;
-    public float thirstChangeValue = 1.0f;
-    public float wcChangeValue = 1.0f;
+    [SerializeField] private GameObject sandwich;
+    [SerializeField] private GameObject water;
+    [SerializeField] private GameObject toilet;
+    [SerializeField] private GameObject center;
+    private static float stopDistance = 1f;
+    private static float changeTime = 1.0f;
     private float timer = 0.0f;
-    public float maxHunger = 500.0f;
-    public float maxThirst = 500.0f;
-    public float maxWC = 500.0f;
-    public float hunger = 500.0f;
-    public float thirst = 500.0f;
-    public float wc = 500.0f;
-
-    public float addValue = 50.0f;
+    private float incrementNeedsTimer = 0.0f;
+    [SerializeField] private float maxHunger = 500.0f;
+    [SerializeField] private float maxThirst = 500.0f;
+    [SerializeField] private float maxWC = 500.0f;
+    public float hunger;
+    public float thirst;
+    public float wc;
+    [SerializeField] private static float addValue = 50.0f;
+    private bool isNearTarget = false;
+    private Destination destination;
 
     void Start()
     {
+        hunger = maxHunger;
+        thirst = maxThirst;
+        wc = maxWC;
         _agent = GetComponent<NavMeshAgent>();
-        //_animator = GetComponent<Animator>();
-        //target = targets[0];
+        _animator = GetComponent<Animator>();
+        destination = Destination.Center;
     }
 
     void Update()
     {
+        Debug.Log("Is Near target: " + isNearTarget);
 
         timer += Time.deltaTime;
 
         if (timer >= changeTime)
         {
-            hunger -= hungerChangeValue;
-            thirst -= thirstChangeValue;
-            wc -= wcChangeValue;
+            CheckAndDecreamentNeeds();
             timer = 0.0f;
         }
 
-        if (hunger < 100.0f)
+        if(!isNearTarget)
         {
-            MoveToTarget(target1, ref hunger, maxHunger);
+            if (hunger < 150.0f)
+            {
+                MoveToTarget(sandwich, Destination.Sandwich);
+            }
+            else if (thirst < 150.0f)
+            {
+                MoveToTarget(water, Destination.Water);
+            }
+            else if (wc < 150.0f)
+            {
+                MoveToTarget(toilet, Destination.Toilet);
+            }
         }
-        else if (thirst < 100.0f)
-        {
-            MoveToTarget(target2, ref thirst, maxThirst);
-        }
-        else if (wc < 100.0f)
-        {
-            MoveToTarget(target3, ref wc, maxWC);
-        }
-        else
-        { 
-            _agent.SetDestination(center.transform.position);
+        else {
+            switch (destination) 
+            {
+                case Destination.Sandwich:
+                    IncrementNeeds(ref hunger, ref maxHunger);
+                    break;
+                case Destination.Water:
+                    IncrementNeeds(ref thirst, ref maxThirst);
+                    break;
+                case Destination.Toilet:
+                    IncrementNeeds(ref wc, ref maxWC);
+                    break;
+            }
         }
 
         CheckNeeds();
-
     }
 
-    public void MoveToTarget(GameObject destination, ref float need, float maxNeed)
+    private void CheckAndDecreamentNeeds()
     {
-        float distanceToTarget = Vector3.Distance(destination.transform.position, _agent.transform.position);
+        if(!isNearTarget || destination != Destination.Sandwich)
+        {
+            hunger -= 5.0f;
+        }
+
+        if(!isNearTarget || destination != Destination.Water)
+        {
+            thirst -= 7.0f;
+        }
+
+        if(!isNearTarget || destination != Destination.Toilet)
+        {
+            wc -= 3.0f;
+        }
+    }
+
+    private void MoveToTarget(GameObject target, Destination destinationName)
+    {
+        this.destination = destinationName;
+        float distanceToTarget = Vector3.Distance(target.transform.position, _agent.transform.position);
 
         if (distanceToTarget > stopDistance)
         {
-            Debug.Log("Moving to target: " + destination.name);
-            _agent.SetDestination(destination.transform.position);
-            _agent.isStopped = false;
+            Debug.Log("Moving to target: " + target.name);
+            _agent.SetDestination(target.transform.position);
+            isNearTarget = false;
         }
         else if (distanceToTarget <= stopDistance)
         {
-            Debug.Log("Arrived at target: " + destination.name);
+            isNearTarget = true;
+        }
 
-            while(need < maxNeed)
+    }
+
+    private void IncrementNeeds(ref float need, ref float maxNeed)
+    {
+        incrementNeedsTimer += Time.deltaTime;
+
+        if (incrementNeedsTimer >= changeTime)
+        {
+            if(need < maxNeed)
             {
-                IncrementNeeds(ref need, ref maxNeed);
+                need += addValue;
+                //Debug.Log("Need increased: " + need);
             }
-
-            _agent.isStopped = true;
-
-            if (destination != center && need >= maxNeed)
+            else
             {
-                need = maxNeed;
-                _agent.isStopped = false;
-                _agent.SetDestination(center.transform.position);
-                Debug.Log("Returning to center");
+                MoveToTarget(center, Destination.Center);
             }
+            
+            incrementNeedsTimer = 0f;
         }
     }
 
-    public void IncrementNeeds(ref float need, ref float maxNeed)
-    {
-            timer += Time.deltaTime;
-
-            if (timer >= changeTime)
-            {
-                need += addValue;
-                timer -= changeTime;
-                Debug.Log("Need increased: " + need);
-            }
-        
-    }
-
-    public void CheckNeeds()
+    private void CheckNeeds()
     {
         if (hunger <= 0.0f || thirst <= 0.0f || wc <= 0.0f)
         {
             SceneManager.LoadScene("SampleScene");
         }
     }
+}
+
+enum Destination {
+    Sandwich,
+    Water,
+    Toilet,
+    Center
 }
