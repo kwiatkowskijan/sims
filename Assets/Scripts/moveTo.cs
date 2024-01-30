@@ -12,7 +12,7 @@ public class moveTo : MonoBehaviour
     [SerializeField] private GameObject water;
     [SerializeField] private GameObject toilet;
     [SerializeField] private GameObject center;
-    private static float stopDistance = 1f;
+    private static float stopDistance = 2f;
     private static float changeTime = 1.0f;
     private float timer = 0.0f;
     private float incrementNeedsTimer = 0.0f;
@@ -39,6 +39,10 @@ public class moveTo : MonoBehaviour
     void Update()
     {
         Debug.Log("Is Near target: " + isNearTarget);
+        Debug.Log("Is walking: " + _animator.GetBool("IsWalking"));
+        Debug.Log("IsSitting: " + _animator.GetBool("IsSitting"));
+        Debug.Log("IsDrinking: " + _animator.GetBool("IsDrinking"));
+
 
         timer += Time.deltaTime;
 
@@ -50,15 +54,15 @@ public class moveTo : MonoBehaviour
 
         if(!isNearTarget)
         {
-            if (hunger < 150.0f)
+            if (hunger < 300.0f)
             {
                 MoveToTarget(sandwich, Destination.Sandwich);
             }
-            else if (thirst < 150.0f)
+            else if (thirst < 300.0f)
             {
                 MoveToTarget(water, Destination.Water);
             }
-            else if (wc < 150.0f)
+            else if (wc < 300.0f)
             {
                 MoveToTarget(toilet, Destination.Toilet);
             }
@@ -85,7 +89,7 @@ public class moveTo : MonoBehaviour
     {
         if(!isNearTarget || destination != Destination.Sandwich)
         {
-            hunger -= 5.0f;
+            hunger -= 3.0f;
         }
 
         if(!isNearTarget || destination != Destination.Water)
@@ -95,7 +99,7 @@ public class moveTo : MonoBehaviour
 
         if(!isNearTarget || destination != Destination.Toilet)
         {
-            wc -= 3.0f;
+            wc -= 1.0f;
         }
     }
 
@@ -108,11 +112,38 @@ public class moveTo : MonoBehaviour
         {
             Debug.Log("Moving to target: " + target.name);
             _agent.SetDestination(target.transform.position);
+            _animator.SetBool("IsWalking", true);
+            _animator.SetBool("IsSitting", false);
+            _animator.SetBool("IsDrinking", false);
             isNearTarget = false;
         }
         else if (distanceToTarget <= stopDistance)
         {
+            Debug.Log(destination);
+            //_animator.SetBool("IsWalking", false);
             isNearTarget = true;
+
+            if (destinationName == Destination.Toilet)
+            {
+                _agent.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                _animator.SetBool("IsSitting", true);
+                _animator.SetBool("IsDrinking", false);
+            }
+            else if (destinationName == Destination.Sandwich)
+            {
+                _animator.SetBool("IsSitting", false);
+                _animator.SetBool("IsDrinking", true); 
+            }
+            else if (destinationName == Destination.Water)
+            {
+                _animator.SetBool("IsSitting", false);
+                _animator.SetBool("IsDrinking", true);
+            }
+            else
+            {
+                _animator.SetBool("IsSitting", false);
+                _animator.SetBool("IsDrinking", false);
+            }
         }
 
     }

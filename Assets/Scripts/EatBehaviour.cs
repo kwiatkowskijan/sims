@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EatBehaviour : MonoBehaviour
 {
-    public GameObject player;
+    [SerializeField] private GameObject player;
     public float triggerDistance = 2f;
     private AudioSource audioSource;
     private bool isAudioPlaying = false;
