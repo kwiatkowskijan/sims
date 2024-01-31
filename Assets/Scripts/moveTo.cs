@@ -54,15 +54,15 @@ public class moveTo : MonoBehaviour
 
         if(!isNearTarget)
         {
-            if (hunger < 300.0f)
+            if (hunger < 200.0f)
             {
                 MoveToTarget(sandwich, Destination.Sandwich);
             }
-            else if (thirst < 300.0f)
+            else if (thirst < 200.0f)
             {
                 MoveToTarget(water, Destination.Water);
             }
-            else if (wc < 300.0f)
+            else if (wc < 200.0f)
             {
                 MoveToTarget(toilet, Destination.Toilet);
             }
@@ -89,17 +89,17 @@ public class moveTo : MonoBehaviour
     {
         if(!isNearTarget || destination != Destination.Sandwich)
         {
-            hunger -= 3.0f;
+            hunger -= 4.0f;
         }
 
         if(!isNearTarget || destination != Destination.Water)
         {
-            thirst -= 7.0f;
+            thirst -= 8.0f;
         }
 
         if(!isNearTarget || destination != Destination.Toilet)
         {
-            wc -= 1.0f;
+            wc -= 2.0f;
         }
     }
 
@@ -111,6 +111,7 @@ public class moveTo : MonoBehaviour
         if (distanceToTarget > stopDistance)
         {
             Debug.Log("Moving to target: " + target.name);
+            Debug.Log("Distance to target: " +  distanceToTarget);
             _agent.SetDestination(target.transform.position);
             _animator.SetBool("IsWalking", true);
             _animator.SetBool("IsSitting", false);
@@ -120,29 +121,38 @@ public class moveTo : MonoBehaviour
         else if (distanceToTarget <= stopDistance)
         {
             Debug.Log(destination);
-            //_animator.SetBool("IsWalking", false);
             isNearTarget = true;
 
             if (destinationName == Destination.Toilet)
             {
+                _animator.SetBool("IsWalking", false);
                 _agent.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
                 _animator.SetBool("IsSitting", true);
                 _animator.SetBool("IsDrinking", false);
             }
             else if (destinationName == Destination.Sandwich)
             {
+                _animator.SetBool("IsWalking", false);
                 _animator.SetBool("IsSitting", false);
                 _animator.SetBool("IsDrinking", true); 
             }
             else if (destinationName == Destination.Water)
             {
+                _animator.SetBool("IsWalking", false);
                 _animator.SetBool("IsSitting", false);
                 _animator.SetBool("IsDrinking", true);
+            }
+            else if (destinationName == Destination.Center) 
+            {
+                _animator.SetBool("IsWalking", false);
+                _animator.SetBool("IsSitting", true);
+                _animator.SetBool("IsDrinking", false);
             }
             else
             {
                 _animator.SetBool("IsSitting", false);
                 _animator.SetBool("IsDrinking", false);
+                _animator.SetBool("IsWalking", false);
             }
         }
 
